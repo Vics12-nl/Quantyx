@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matemáticas Visuales</title>
+
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ================================================
+       VARIABLES GLOBALES DE DISEÑO
+       Cambia aquí los colores principales del sitio
+    ================================================ */
+    :root {
+      --bg-deep:       #07080f;
+      --bg-surface:    #0e1020;
+      --bg-card:       #13162a;
+      --bg-card-hover: #181c35;
+      --border:        rgba(99, 120, 255, 0.15);
+      --border-hover:  rgba(99, 120, 255, 0.45);
+
+      --accent-1: #6378ff;   /* azul-violeta principal */
+      --accent-2: #a56bff;   /* púrpura secundario */
+      --accent-3: #3ec6f5;   /* cian acento */
+      --accent-pdf: #ff6b9d; /* rosa para PDFs */
+
+      --text-primary:   #eef0ff;
+      --text-secondary: #8b91b8;
+      --text-muted:     #555a7a;
+
+      --radius-card: 18px;
+      --radius-sm:   10px;
+      --shadow-card: 0 8px 40px rgba(0,0,0,0.45);
+      --shadow-glow: 0 0 30px rgba(99,120,255,0.18);
+
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ================================================
+       RESET & BASE
+    ================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Fondo con malla de puntos sutil */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(99,120,255,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(165,107,255,0.06) 0%, transparent 50%),
+        radial-gradient(rgba(99,120,255,0.06) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main, header, footer, section { position: relative; z-index: 1; }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+
+    /* ================================================
+       TIPOGRAFÍA UTILITARIA
+    ================================================ */
+    .display { font-family: 'Syne', sans-serif; }
+
+    .section-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text-primary);
+      margin-bottom: 0.55rem;
+    }
+
+    .section-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+    }
+
+    /* ================================================
+       LAYOUT CONTENEDOR
+    ================================================ */
+    .container {
+      width: 92%;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* ================================================
+       HEADER / NAV
+    ================================================ */
+    header {
+      padding: 0 5%;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,8,15,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(99,120,255,0.4);
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* ============================================
+       CAMBIA AQUÍ EL NOMBRE DE LA PLATAFORMA
+       (también en <title> arriba)
+    ============================================ */
+    .logo-text span { color: var(--accent-1); }
+
+    nav { display: flex; gap: 2rem; align-items: center; }
+
+    nav a {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    nav a:hover { color: var(--text-primary); }
+
+    .btn-nav {
+      padding: 0.45rem 1.1rem;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #fff !important;
+      box-shadow: 0 4px 14px rgba(99,120,255,0.3);
+      transition: box-shadow var(--transition), transform var(--transition) !important;
+    }
+    .btn-nav:hover {
+      box-shadow: 0 6px 22px rgba(99,120,255,0.5) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Menú hamburguesa (mobile) */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text-secondary);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    /* ================================================
+       HERO SECTION
+    ================================================ */
+    .hero {
+      padding: 90px 5% 70px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.35rem 0.9rem;
+      background: rgba(99,120,255,0.12);
+      border: 1px solid rgba(99,120,255,0.25);
+      border-radius: 30px;
+      font-size: 0.78rem;
+      color: var(--accent-3);
+      margin-bottom: 1.4rem;
+      font-weight: 500;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.1rem;
+    }
+
+    /* ============================================
+       CAMBIA AQUÍ EL TÍTULO PRINCIPAL DEL HERO
+    ============================================ */
+    .hero h1 .gradient-text {
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.8rem;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      color: #fff;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      box-shadow: 0 6px 24px rgba(99,120,255,0.35);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(99,120,255,0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.8rem;
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border-hover);
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .btn-secondary:hover {
+      background: rgba(99,120,255,0.08);
+      border-color: var(--accent-1);
+    }
+
+    /* Stats rápidos */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .stat-num span { color: var(--accent-1); }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ================================================
+       SECCIONES GENERALES
+    ================================================ */
+    section {
+      padding: 70px 0;
+    }
+
+    .section-header {
+      margin-bottom: 2.5rem;
+    }
+
+    /* ================================================
+       GRIDS DE TARJETAS
+    ================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ================================================
+       TARJETAS DE VIDEO
+    ================================================ */
+    .video-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      /* Animación de entrada (fade-in + slide-up) */
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    .video-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-glow), var(--shadow-card);
+    }
+
+    /* Contenedor de aspecto 16:9 para el iframe */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-info {
+      padding: 1.1rem 1.3rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .video-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-3);
+      background: rgba(62,198,245,0.1);
+      border: 1px solid rgba(62,198,245,0.2);
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+      margin-bottom: 0.7rem;
+      width: fit-content;
+    }
+
+    .video-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
+    }
+
+    .video-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .video-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .video-meta i { font-size: 0.75rem; }
+
+    /* ================================================
+       TARJETAS DE PDF / RECURSOS
+    ================================================ */
+    .pdf-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      box-shadow: var(--shadow-card);
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      /* Animación de entrada */
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    .pdf-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pdf-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,107,157,0.4);
+      box-shadow: 0 0 28px rgba(255,107,157,0.12), var(--shadow-card);
+    }
+
+    .pdf-icon-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pdf-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(255,107,157,0.2), rgba(165,107,255,0.2));
+      border: 1px solid rgba(255,107,157,0.25);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--accent-pdf);
+    }
+
+    .pdf-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-pdf);
+      background: rgba(255,107,157,0.1);
+      border: 1px solid rgba(255,107,157,0.2);
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+    }
+
+    .pdf-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .pdf-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .pdf-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .pdf-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .pdf-actions {
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.55rem 1.1rem;
+      background: linear-gradient(135deg, var(--accent-pdf), var(--accent-2));
+      color: #fff;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      box-shadow: 0 4px 14px rgba(255,107,157,0.25);
+      cursor: pointer;
+      border: none;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-pdf:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 20px rgba(255,107,157,0.4);
+    }
+
+    .btn-pdf-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-hover);
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .btn-pdf-ghost:hover {
+      border-color: var(--accent-pdf);
+      color: var(--text-primary);
+    }
+
+    /* ================================================
+       DIVIDER DECORATIVO
+    ================================================ */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* ================================================
+       FOOTER
+    ================================================ */
+    footer {
+      padding: 2.5rem 5%;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.4rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .footer-links a:hover { color: var(--text-primary); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ================================================
+       SCROLL INDICATOR
+    ================================================ */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+      z-index: 9999;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ================================================
+       RESPONSIVE
+    ================================================ */
+    @media (max-width: 768px) {
+      nav { display: none; }
+      nav.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: rgba(7,8,15,0.97);
+        padding: 1.5rem 5%;
+        border-bottom: 1px solid var(--border);
+        gap: 1.2rem;
+        backdrop-filter: blur(16px);
+      }
+      .menu-toggle { display: flex; }
+      .hero { padding: 60px 5% 50px; }
+      .hero-stats { gap: 1.5rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    }
+
+    /* ================================================
+       ANIMACIONES DE ENTRADA (Intersection Observer)
+    ================================================ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Retrasos escalonados para las tarjetas */
+    .video-card:nth-child(1), .pdf-card:nth-child(1) { transition-delay: 0s; }
+    .video-card:nth-child(2), .pdf-card:nth-child(2) { transition-delay: 0.08s; }
+    .video-card:nth-child(3), .pdf-card:nth-child(3) { transition-delay: 0.16s; }
+    .video-card:nth-child(4), .pdf-card:nth-child(4) { transition-delay: 0.22s; }
+    .video-card:nth-child(5), .pdf-card:nth-child(5) { transition-delay: 0.28s; }
+    .video-card:nth-child(6), .pdf-card:nth-child(6) { transition-delay: 0.34s; }
+
+    .video-card, .pdf-card {
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease,
+        border-color var(--transition),
+        box-shadow var(--transition);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de progreso de scroll -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- ================================================
+       HEADER / NAVEGACIÓN
+       CAMBIA EL NOMBRE DE LA PLATAFORMA AQUÍ
+  ================================================ -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+      <div class="logo-text">Matem<span>áticas</span> Visuales</div>
+    </div>
+
+    <nav id="mainNav">
+      <a href="#videos">Videos</a>
+      <a href="#recursos">Recursos</a>
+      <!-- AGREGA MÁS ENLACES DE NAVEGACIÓN AQUÍ -->
+      <a href="#contacto" class="btn-nav">Contacto</a>
+    </nav>
+
+    <!-- Botón menú mobile -->
+    <div class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </div>
+  </header>
+
+
+  <!-- ================================================
+       HERO SECTION
+       CAMBIA EL TÍTULO, SUBTÍTULO Y ESTADÍSTICAS AQUÍ
+  ================================================ -->
+  <section class="hero">
+    <div class="hero-badge">
+      <i class="fa-solid fa-sparkles"></i>
+      Visualizaciones creadas con Manim
+    </div>
+
+    <h1 class="display">
+      Aprende matemáticas<br/>
+      <span class="gradient-text">de forma visual</span>
+    </h1>
+
+    <p>
+      Explora conceptos matemáticos complejos a través de animaciones
+      interactivas, videos cortos y recursos descargables. Desde álgebra
+      lineal hasta cálculo multivariable.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#videos" class="btn-primary">
+        <i class="fa-solid fa-play"></i>
+        Ver videos
+      </a>
+      <a href="#recursos" class="btn-secondary">
+        <i class="fa-solid fa-file-pdf"></i>
+        Ver recursos
+      </a>
+    </div>
+
+    <!-- CAMBIA LOS NÚMEROS DE LAS ESTADÍSTICAS AQUÍ -->
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">12<span>+</span></div>
+        <div class="stat-label">Videos animados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8<span>+</span></div>
+        <div class="stat-label">Recursos PDF</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5<span>+</span></div>
+        <div class="stat-label">Temas cubiertos</div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ================================================
+       SECCIÓN DE VIDEOS
+       ★ AQUÍ PUEDES AGREGAR MÁS VIDEOS ★
+       Copia una tarjeta <div class="video-card"> completa
+       y pégala dentro de <div class="cards-grid">
+  ================================================ -->
+  <section id="videos">
+    <div class="container">
+
+      <div class="section-header fade-up">
+        <div class="section-label"><i class="fa-solid fa-circle-play"></i> &nbsp;Videos animados</div>
+        <h2 class="section-title">Conceptos en movimiento</h2>
+        <p class="section-desc">
+          Videos cortos creados con Manim que explican conceptos matemáticos
+          de manera visual e intuitiva.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+
+        <!-- ============================================
+             TARJETA DE VIDEO #1
+             CAMBIA: video-tag, video-title, video-desc,
+             el src del iframe, duración y tema.
+             
+             Para obtener el src de YouTube:
+             1. Abre el video en YouTube
+             2. Haz clic en "Compartir" → "Insertar"
+             3. Copia el src del iframe
+             O usa: https://www.youtube.com/embed/TU_ID_DE_VIDEO
+        ============================================ -->
+        <div class="video-card">
+          <div class="video-wrapper">
+            <!--
+              REEMPLAZA "dQw4w9WgXcQ" CON EL ID DE TU VIDEO DE YOUTUBE
+              El ID es la parte después de "?v=" en la URL del video.
+              Ejemplo: https://youtube.com/watch?v=dQw4w9WgXcQ → ID = dQw4w9WgXcQ
+            -->
+            <iframe
+              src="https://www.youtube.com/embed/BWtwAHj-Uz4"
+              title="Transformaciones lineales"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-info">
+            <div class="video-tag"><i class="fa-solid fa-tag"></i> Álgebra lineal</div>
+            <!-- CAMBIA EL TÍTULO DEL VIDEO -->
+            <h3 class="video-title">Transformaciones lineales visualizadas</h3>
+            <!-- CAMBIA LA DESCRIPCIÓN DEL VIDEO -->
+            <p class="video-desc">
+              Descubre cómo las matrices transforman el espacio vectorial 2D,
+              con animaciones que muestran rotaciones, escalados y reflexiones.
+            </p>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> 4:32</span>
+              <span><i class="fa-solid fa-layer-group"></i> Nivel intermedio</span>
+            </div>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA VIDEO #1 ============ -->
+
+
+        <!-- ============================================
+             TARJETA DE VIDEO #2
+             COPIA ESTA TARJETA Y PÉGALA PARA NUEVOS VIDEOS
+        ============================================ -->
+        <div class="video-card">
+          <div class="video-wrapper">
+            <!-- REEMPLAZA EL ID DEL VIDEO -->
+            <iframe
+              src="https://www.youtube.com/embed/39YYQFQP2xA"
+              title="La derivada explicada"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-info">
+            <div class="video-tag"><i class="fa-solid fa-tag"></i> Cálculo</div>
+            <h3 class="video-title">La derivada: geometría e intuición</h3>
+            <p class="video-desc">
+              Una exploración visual de qué es la derivada, desde la pendiente
+              de una recta secante hasta la tangente en el límite.
+            </p>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> 6:15</span>
+              <span><i class="fa-solid fa-layer-group"></i> Básico</span>
+            </div>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA VIDEO #2 ============ -->
+
+
+        <!-- ============================================
+             TARJETA DE VIDEO #3
+             COPIA ESTA TARJETA Y PÉGALA PARA NUEVOS VIDEOS
+        ============================================ -->
+        <div class="video-card">
+          <div class="video-wrapper">
+            <!-- REEMPLAZA EL ID DEL VIDEO -->
+            <iframe
+              src="https://www.youtube.com/embed/_uwMj-2Hw38"
+              title="Números complejos"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="video-info">
+            <div class="video-tag"><i class="fa-solid fa-tag"></i> Álgebra</div>
+            <h3 class="video-title">Números complejos y el plano de Argand</h3>
+            <p class="video-desc">
+              Por qué los números imaginarios no son tan "imaginarios":
+              visualiza multiplicaciones como rotaciones en el plano complejo.
+            </p>
+            <div class="video-meta">
+              <span><i class="fa-regular fa-clock"></i> 5:48</span>
+              <span><i class="fa-solid fa-layer-group"></i> Intermedio</span>
+            </div>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA VIDEO #3 ============ -->
+
+
+        <!-- ============================================
+             ★ AQUÍ PUEDES AGREGAR MÁS VIDEOS ★
+             COPIA EL BLOQUE DE ARRIBA (desde <!-- TARJETA... -->
+             hasta <!-- FIN TARJETA... -->) y pégalo aquí.
+             Luego cambia el ID del iframe, título y descripción.
+        ============================================ -->
+
+
+      </div><!-- fin .cards-grid videos -->
+    </div><!-- fin .container -->
+  </section>
+  <!-- ============ FIN SECCIÓN DE VIDEOS ============ -->
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ================================================
+       SECCIÓN DE PDFs Y RECURSOS
+       ★ AQUÍ PUEDES AGREGAR MÁS PDFs ★
+       Copia una tarjeta <div class="pdf-card"> completa
+       y pégala dentro de <div class="cards-grid">
+  ================================================ -->
+  <section id="recursos">
+    <div class="container">
+
+      <div class="section-header fade-up">
+        <div class="section-label"><i class="fa-solid fa-file-pdf"></i> &nbsp;Recursos descargables</div>
+        <h2 class="section-title">Material de apoyo</h2>
+        <p class="section-desc">
+          Notas, ejercicios y resúmenes en PDF para complementar cada tema
+          y practicar a tu propio ritmo.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+
+        <!-- ============================================
+             TARJETA PDF #1
+             CAMBIA: pdf-title, pdf-desc, tamaño,
+             páginas, y el href del botón de descarga.
+             
+             Si el PDF está en tu servidor local:
+             href="./nombre-del-archivo.pdf"
+             
+             Si está en Google Drive:
+             Comparte el archivo → Copiar enlace
+             Cambia /view por /export?format=pdf en la URL
+        ============================================ -->
+        <div class="pdf-card">
+          <div class="pdf-icon-row">
+            <div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>
+            <span class="pdf-badge">PDF</span>
+          </div>
+          <!-- CAMBIA EL TÍTULO DEL PDF -->
+          <h3 class="pdf-title">Notas de Álgebra Lineal</h3>
+          <!-- CAMBIA LA DESCRIPCIÓN DEL PDF -->
+          <p class="pdf-desc">
+            Resumen completo de vectores, matrices, determinantes y
+            transformaciones lineales con ejemplos resueltos paso a paso.
+          </p>
+          <div class="pdf-meta">
+            <!-- CAMBIA EL TAMAÑO Y NÚMERO DE PÁGINAS -->
+            <span><i class="fa-solid fa-weight-hanging"></i> 2.4 MB</span>
+            <span><i class="fa-regular fa-file"></i> 34 páginas</span>
+          </div>
+          <div class="pdf-actions">
+            <!--
+              REEMPLAZA el href="#" con la URL real del PDF
+              Ejemplo: href="./algebra-lineal.pdf"
+            -->
+            <a href="#" class="btn-pdf" download>
+              <i class="fa-solid fa-download"></i> Descargar
+            </a>
+            <a href="#" class="btn-pdf-ghost" target="_blank" rel="noopener">
+              <i class="fa-regular fa-eye"></i> Ver
+            </a>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA PDF #1 ============ -->
+
+
+        <!-- ============================================
+             TARJETA PDF #2
+             COPIA ESTA TARJETA Y PÉGALA PARA NUEVOS RECURSOS
+        ============================================ -->
+        <div class="pdf-card">
+          <div class="pdf-icon-row">
+            <div class="pdf-icon"><i class="fa-solid fa-book-open"></i></div>
+            <span class="pdf-badge">PDF</span>
+          </div>
+          <h3 class="pdf-title">Ejercicios de Cálculo Diferencial</h3>
+          <p class="pdf-desc">
+            Colección de 80 problemas de derivadas e integrales con soluciones
+            detalladas, desde nivel básico hasta avanzado.
+          </p>
+          <div class="pdf-meta">
+            <span><i class="fa-solid fa-weight-hanging"></i> 1.8 MB</span>
+            <span><i class="fa-regular fa-file"></i> 48 páginas</span>
+          </div>
+          <div class="pdf-actions">
+            <!-- REEMPLAZA href="#" con la URL real -->
+            <a href="#" class="btn-pdf" download>
+              <i class="fa-solid fa-download"></i> Descargar
+            </a>
+            <a href="#" class="btn-pdf-ghost" target="_blank" rel="noopener">
+              <i class="fa-regular fa-eye"></i> Ver
+            </a>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA PDF #2 ============ -->
+
+
+        <!-- ============================================
+             TARJETA PDF #3
+             COPIA ESTA TARJETA Y PÉGALA PARA NUEVOS RECURSOS
+        ============================================ -->
+        <div class="pdf-card">
+          <div class="pdf-icon-row">
+            <div class="pdf-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <span class="pdf-badge">PDF</span>
+          </div>
+          <h3 class="pdf-title">Guía de Números Complejos</h3>
+          <p class="pdf-desc">
+            Desde la definición de la unidad imaginaria hasta la Fórmula de
+            Euler, con diagramas del plano de Argand.
+          </p>
+          <div class="pdf-meta">
+            <span><i class="fa-solid fa-weight-hanging"></i> 980 KB</span>
+            <span><i class="fa-regular fa-file"></i> 22 páginas</span>
+          </div>
+          <div class="pdf-actions">
+            <!-- REEMPLAZA href="#" con la URL real -->
+            <a href="#" class="btn-pdf" download>
+              <i class="fa-solid fa-download"></i> Descargar
+            </a>
+            <a href="#" class="btn-pdf-ghost" target="_blank" rel="noopener">
+              <i class="fa-regular fa-eye"></i> Ver
+            </a>
+          </div>
+        </div>
+        <!-- ============ FIN TARJETA PDF #3 ============ -->
+
+
+        <!-- ============================================
+             ★ AQUÍ PUEDES AGREGAR MÁS PDFs ★
+             COPIA EL BLOQUE DE ARRIBA (desde <!-- TARJETA PDF... -->
+             hasta <!-- FIN TARJETA PDF... -->) y pégalo aquí.
+             Luego cambia título, descripción y enlace.
+        ============================================ -->
+
+
+      </div><!-- fin .cards-grid PDFs -->
+    </div><!-- fin .container -->
+  </section>
+  <!-- ============ FIN SECCIÓN DE PDFs ============ -->
+
+
+  <div class="section-divider"></div>
+
+
+  <!-- ================================================
+       FOOTER
+       CAMBIA LA INFORMACIÓN DE CONTACTO/CRÉDITOS AQUÍ
+  ================================================ -->
+  <footer id="contacto">
+    <div class="footer-left">
+      <div class="logo-icon" style="width:28px;height:28px;font-size:0.75rem;">
+        <i class="fa-solid fa-wave-square"></i>
+      </div>
+      <!-- CAMBIA EL NOMBRE EN EL FOOTER -->
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;">
+        Matemáticas Visuales
+      </span>
+    </div>
+
+    <div class="footer-links">
+      <a href="#videos">Videos</a>
+      <a href="#recursos">Recursos</a>
+      <!-- AGREGA MÁS ENLACES AL FOOTER AQUÍ -->
+    </div>
+
+    <!-- CAMBIA EL NOMBRE DEL AUTOR / AÑO AQUÍ -->
+    <div class="footer-copy">© 2025 · Hecho con Manim &amp; ❤️</div>
+  </footer>
+  <!-- ============ FIN FOOTER ============ -->
+
+
+  <!-- ================================================
+       JAVASCRIPT
+       (barra de progreso, menú mobile, animaciones)
+  ================================================ -->
+  <script>
+    /* --- Barra de progreso de scroll --- */
+    const scrollBar = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total    = document.body.scrollHeight - window.innerHeight;
+      scrollBar.style.width = (scrolled / total * 100) + '%';
+    });
+
+    /* --- Menú mobile --- */
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav    = document.getElementById('mainNav');
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('open');
+    });
+    // Cierra el menú al hacer clic en un enlace
+    mainNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mainNav.classList.remove('open'));
+    });
+
+    /* ---  Intersection Observer para animaciones fade-up ---
+       Las tarjetas y encabezados aparecen al hacer scroll
+       con una transición suave de opacidad + movimiento.
+    --- */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Una vez visible, deja de observar para mejor rendimiento
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,  // El elemento debe ser 12% visible para activarse
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    // Observa tarjetas de video, PDF y secciones con fade-up
+    document.querySelectorAll('.video-card, .pdf-card, .fade-up').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
